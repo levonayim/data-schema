@@ -21,6 +21,8 @@ export default function EntityCard({ entity, onDragStart, onPortDown, onPortUp }
   const toggleCollapse = useStore((s) => s.toggleCollapse);
   const disconnectAttribute = useStore((s) => s.disconnectAttribute);
   const removeAttribute = useStore((s) => s.removeAttribute);
+  const openTermDrawer = useStore((s) => s.openTermDrawer);
+  const openDetailEntity = useStore((s) => s.openDetailEntity);
   const entities = useStore((s) => s.entities);
   const [openBadge, setOpenBadge] = useState<string | null>(null);
 
@@ -63,7 +65,15 @@ export default function EntityCard({ entity, onDragStart, onPortDown, onPortUp }
           }}
           onDoubleClick={() => toggleCollapse(entity.id)}
         >
-          <span className="font-semibold text-[14px] truncate" style={{ color: "var(--text-primary)" }}>
+          <span
+            className="font-semibold text-[14px] truncate hover:underline"
+            style={{ color: "var(--text-primary)" }}
+            title="View entity details"
+            onClick={(e) => {
+              e.stopPropagation();
+              openDetailEntity(entity.id);
+            }}
+          >
             {entity.name}
           </span>
           <div className="flex items-center gap-2 shrink-0">
@@ -77,12 +87,29 @@ export default function EntityCard({ entity, onDragStart, onPortDown, onPortUp }
               className="rounded-full text-[12px] font-medium px-2 py-0.5 border"
               style={{ borderColor: "var(--border-strong)", color: "var(--text-secondary)" }}
             >
-              {entity.attributes.length}
+              {entity.kind === "valueList" ? entity.values?.length ?? 0 : entity.attributes.length}
             </span>
           </div>
         </div>
 
         <div style={{ borderTop: "1px solid var(--border)" }}>
+          {entity.kind === "valueList" &&
+            (entity.values ?? []).map((v, i) => (
+              <div
+                key={v + i}
+                className="flex items-center px-4"
+                style={{ height: ROW_H, borderTop: i === 0 ? "none" : "1px solid var(--border)" }}
+              >
+                <span className="text-[13px]" style={{ color: "var(--text-secondary)" }}>
+                  {v}
+                </span>
+              </div>
+            ))}
+          {entity.kind === "valueList" && (entity.values ?? []).length === 0 && (
+            <div className="px-4 py-2.5 text-[12.5px]" style={{ color: "var(--text-tertiary)" }}>
+              No values yet.
+            </div>
+          )}
           {visibleRows.map((a, i) => {
             const ref = a.refEntityId ? entities.find((e) => e.id === a.refEntityId) : null;
             const refColor = ref ? colorById(ref.color) : null;
@@ -95,8 +122,24 @@ export default function EntityCard({ entity, onDragStart, onPortDown, onPortUp }
                   borderTop: i === 0 ? "none" : "1px solid var(--border)",
                 }}
               >
-                <span className="text-[13px] truncate" style={{ color: "var(--text-secondary)" }}>
+                <span
+                  className="text-[13px] truncate cursor-pointer hover:underline flex items-center gap-1"
+                  style={{ color: "var(--text-secondary)" }}
+                  title="Edit term details"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    openTermDrawer(entity.id, a.id);
+                  }}
+                >
                   {a.name}
+                  {a.primaryKey && (
+                    <span
+                      className="text-[9px] font-bold px-1 rounded shrink-0"
+                      style={{ background: "var(--accent-blue)", color: "#fff" }}
+                    >
+                      PK
+                    </span>
+                  )}
                 </span>
                 <div className="flex items-center gap-1.5">
                   {ref && refColor ? (

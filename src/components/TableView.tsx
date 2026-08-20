@@ -8,6 +8,7 @@ export default function TableView() {
   const selectEntity = useStore((s) => s.selectEntity);
   const [openEntity, setOpenEntity] = useState<string | null>(selectedEntityId);
   const leftPanelOpen = useStore((s) => s.leftPanelOpen);
+  const openDetailEntity = useStore((s) => s.openDetailEntity);
 
   return (
     <div
@@ -33,7 +34,14 @@ export default function TableView() {
               >
                 <div className="flex items-center gap-2.5 min-w-0">
                   <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: color.dot }} />
-                  <span className="font-semibold text-[14px] truncate" style={{ color: "var(--text-primary)" }}>
+                  <span
+                    className="font-semibold text-[14px] truncate hover:underline"
+                    style={{ color: "var(--text-primary)" }}
+                    onClick={(ev) => {
+                      ev.stopPropagation();
+                      openDetailEntity(e.id);
+                    }}
+                  >
                     {e.name}
                   </span>
                   {e.status === "draft" && (

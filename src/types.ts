@@ -21,6 +21,11 @@ export const DATA_TYPES: DataType[] = [
   "json",
 ];
 
+export interface Sensitivity {
+  personal: boolean;
+  business: boolean;
+}
+
 export interface Attribute {
   id: string;
   name: string;
@@ -28,13 +33,21 @@ export interface Attribute {
   dataType: DataType | null;
   /** if set, this attribute is a relationship/reference to another entity */
   refEntityId: string | null;
+  primaryKey?: boolean;
+  foreignKey?: boolean;
+  required?: boolean;
+  multiple?: boolean;
+  stateful?: boolean;
+  sensitivity?: Sensitivity;
 }
 
 export type EntityStatus = "published" | "draft";
+export type EntityKind = "termSet" | "valueList";
 
 export interface EntityNode {
   id: string;
   name: string;
+  kind: EntityKind;
   color: string;
   status: EntityStatus;
   version: string;
@@ -42,6 +55,13 @@ export interface EntityNode {
   y: number;
   collapsed: boolean;
   attributes: Attribute[];
+  /** only meaningful when kind === "valueList" */
+  values?: string[];
+  description?: string;
+  tags?: string[];
+  createdBy?: string;
+  updatedBy?: string;
+  updatedAt?: number;
 }
 
 export interface ChatMessage {
@@ -49,6 +69,8 @@ export interface ChatMessage {
   role: "user" | "assistant";
   text: string;
   ts: number;
+  /** optional markdown-ish table rendered under the text */
+  table?: { headers: string[]; rows: string[][] };
 }
 
 export type ViewMode = "canvas" | "table";
@@ -59,4 +81,16 @@ export interface Collaborator {
   id: string;
   initials: string;
   color: string;
+}
+
+export type SchemaStatus = "draft" | "published";
+
+export interface SchemaFile {
+  id: string;
+  name: string;
+  version: string;
+  status: SchemaStatus;
+  createdAt: string;
+  updatedAt: string;
+  entities: EntityNode[];
 }

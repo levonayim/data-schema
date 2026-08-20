@@ -138,6 +138,7 @@ export default function RightToolbar() {
 
       <div className="relative">
         <button
+          title="Account menu"
           className="w-9 h-9 rounded-full flex items-center justify-center text-[13px] font-semibold text-white shrink-0"
           style={{ background: "#4b4d5c" }}
           onClick={() => setUserOpen((v) => !v)}

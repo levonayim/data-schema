@@ -2,8 +2,9 @@ import type { EntityNode } from "../types";
 import { CARD_WIDTH, HEADER_H, ROW_H, COLLAPSED_ROWS } from "./layout";
 
 export function entityHeight(e: EntityNode): number {
-  const rows = e.collapsed ? Math.min(e.attributes.length, COLLAPSED_ROWS) : e.attributes.length;
-  const extra = e.collapsed && e.attributes.length > COLLAPSED_ROWS ? 28 : 0;
+  const count = e.kind === "valueList" ? e.values?.length ?? 0 : e.attributes.length;
+  const rows = e.collapsed ? Math.min(count, COLLAPSED_ROWS) : count;
+  const extra = e.collapsed && count > COLLAPSED_ROWS ? 28 : 0;
   return HEADER_H + rows * ROW_H + extra;
 }
 

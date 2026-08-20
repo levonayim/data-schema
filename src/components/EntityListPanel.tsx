@@ -112,7 +112,7 @@ export default function EntityListPanel() {
               </div>
               <div className="flex items-center justify-between mt-1 pl-4 text-[12px]">
                 <span style={{ color: "var(--text-tertiary)" }}>
-                  {e.attributes.length} terms
+                  {e.kind === "valueList" ? `${e.values?.length ?? 0} values` : `${e.attributes.length} terms`}
                   {relCount > 0 && (
                     <>
                       {"  "}

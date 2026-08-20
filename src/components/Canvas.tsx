@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useStore } from "../store";
 import EntityCard from "./EntityCard";
 import Minimap from "./Minimap";
+import EmptyCanvasState from "./EmptyCanvasState";
 import { colorById } from "../lib/colors";
 import { computeConnections, entityHeight } from "../lib/connections";
 import { connectorPath } from "../lib/bezier";
@@ -23,6 +24,7 @@ export default function Canvas() {
   const updatePending = useStore((s) => s.updatePending);
   const endPending = useStore((s) => s.endPending);
   const connectAttribute = useStore((s) => s.connectAttribute);
+  const setAddEntityOpen = useStore((s) => s.setAddEntityOpen);
 
   const viewportRef = useRef<HTMLDivElement>(null);
   const [viewportSize, setViewportSize] = useState({ w: 1200, h: 800 });
@@ -127,6 +129,9 @@ export default function Canvas() {
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}
       onWheel={onWheel}
+      onDoubleClick={(e) => {
+        if (e.target === viewportRef.current || (e.target as HTMLElement).dataset.canvasBg) setAddEntityOpen(true);
+      }}
     >
       <div
         className="absolute top-0 left-0"
@@ -186,7 +191,8 @@ export default function Canvas() {
         )}
       </div>
 
-      <Minimap viewportSize={viewportSize} />
+      {entities.length === 0 && <EmptyCanvasState />}
+      {entities.length > 0 && <Minimap viewportSize={viewportSize} />}
     </div>
   );
 }
